@@ -1,51 +1,50 @@
-import { Container, Grid, makeStyles, TextField } from '@material-ui/core'
-import { useForm } from 'react-hook-form'
+import { makeStyles, Typography, Box } from '@material-ui/core'
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import Entry from '../components/Entry'
+import FormField from '../components/FormField'
+import SubmitBtn from '../components/UI/SubmitBtn'
 
 type IFormsType = {
 	username: string
 	password: string
 }
 
-const Login: React.FC = () => {
-	const {
-		register,
-		resetField,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<IFormsType>()
+const schema: yup.SchemaOf<IFormsType> = yup.object({
+	username: yup.string().required('Name is required'),
+	password: yup.string().min(5).max(20).required(),
+})
 
-	const onSubmit = (data: IFormsType) => {
+const Login: React.FC = () => {
+	const methods = useForm<IFormsType>({
+		resolver: yupResolver(schema),
+	})
+
+	const onSubmit: SubmitHandler<IFormsType> = (data: IFormsType) => {
 		console.log(data)
-		resetField('password')
-		resetField('username')
+		// reset('username')
+		// reset('password')
 	}
 
 	return (
-		<Entry title='Login' onSubmit={handleSubmit(onSubmit)} linkTo='/register' linkText='go to registration' btnText='Login'>
-			<TextField
-				{...register('username', { required: true })}
-				error={errors.username?.type === 'required'}
-				type='text'
-				variant='outlined'
-				margin='normal'
-				fullWidth
-				placeholder='name'
-				label='Name'
-				autoFocus
-			/>
+		<FormProvider {...methods}>
+			<Entry onSubmit={methods.handleSubmit(onSubmit)}>
+				<Typography component='h1' variant='h4' align='center'>
+					Login
+				</Typography>
 
-			<TextField
-				{...register('password', { required: true, min: 5, max: 20 })}
-				error={errors.password?.type === 'required'}
-				type='password'
-				variant='outlined'
-				margin='normal'
-				fullWidth
-				placeholder='password'
-				label='Password'
-			/>
-		</Entry>
+				<FormField name='username' label='User name' />
+				<FormField name='password' label='Password' type='password' />
+
+				<Box display='flex' alignItems='center' justifyContent='space-between'>
+					<Link to='/register'>go to registration</Link>
+					<SubmitBtn>Login</SubmitBtn>
+				</Box>
+			</Entry>
+		</FormProvider>
 	)
 }
 

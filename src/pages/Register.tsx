@@ -1,6 +1,11 @@
-import { Container, Grid, makeStyles, TextField } from '@material-ui/core'
-import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { makeStyles, Typography, Box } from '@material-ui/core'
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 import Entry from '../components/Entry'
+import * as yup from 'yup'
+import FormField from '../components/FormField'
+import SubmitBtn from '../components/UI/SubmitBtn'
 
 type IFormsType = {
 	username: string
@@ -8,70 +13,38 @@ type IFormsType = {
 	confirm: string
 }
 
+const schema: yup.SchemaOf<IFormsType> = yup.object({
+	username: yup.string().required('Name is required'),
+	password: yup.string().min(5).max(20).required(),
+	confirm: yup.string().min(5).max(20).required(),
+})
+
 const Register: React.FC = () => {
-	const {
-		register,
-		resetField,
-		handleSubmit,
-		setError,
-		formState: { errors },
-	} = useForm<IFormsType>()
+	const methods = useForm<IFormsType>({
+		resolver: yupResolver(schema),
+	})
 
-
-  //TODO: fix password/confirm validation
-	const onSubmit = (data: IFormsType) => {
-		if (data.password !== data.confirm) {
-			setError('password', {
-				type: 'manual',
-				message: 'Passwords not match',
-			})
-			resetField('password')
-			resetField('confirm')
-		} else {
-			console.log(data)
-
-			resetField('password')
-			resetField('username')
-			resetField('confirm')
-		}
+	const onSubmit: SubmitHandler<IFormsType> = (data: IFormsType) => {
+		console.log(data)
 	}
 
 	return (
-		<Entry title='Registration' onSubmit={handleSubmit(onSubmit)} linkTo='/login' linkText='go to login' btnText='Register'>
-			<TextField
-				{...register('username', { required: true })}
-				error={errors.username?.type === 'required'}
-				type='text'
-				variant='outlined'
-				margin='normal'
-				fullWidth
-				placeholder='name'
-				label='Name'
-				autoFocus
-			/>
+		<FormProvider {...methods}>
+			<Entry onSubmit={methods.handleSubmit(onSubmit)}>
+				<Typography component='h1' variant='h4' align='center'>
+					Registration
+				</Typography>
 
-			<TextField
-				{...register('password', { required: true, min: 5, max: 20 })}
-				error={errors.password?.type === 'required'}
-				type='password'
-				variant='outlined'
-				margin='normal'
-				fullWidth
-				placeholder='password'
-				label='Password'
-			/>
+				<FormField name='username' label='User name' />
+				<FormField name='password' label='Password' type='password' />
+				<FormField name='confirm' label='Confirm password' type='password' />
 
-			<TextField
-				{...register('confirm', { required: true, min: 5, max: 20 })}
-				error={errors.confirm?.type === 'required'}
-				type='password'
-				variant='outlined'
-				margin='normal'
-				fullWidth
-				placeholder='confirm'
-				label='Confirm'
-			/>
-		</Entry>
+				<Box display='flex' alignItems='center' justifyContent='space-between'>
+					<Link to='/login'>go to login</Link>
+					<SubmitBtn>Register</SubmitBtn>
+				</Box>
+			</Entry>
+		</FormProvider>
 	)
 }
 
