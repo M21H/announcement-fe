@@ -1,4 +1,4 @@
-import { makeStyles, Typography, Box } from '@material-ui/core'
+import { Typography, Box } from '@material-ui/core'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
@@ -7,26 +7,24 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import Entry from '../components/Entry'
 import FormField from '../components/FormField'
 import SubmitBtn from '../components/UI/SubmitBtn'
+import { LoginData } from '../redux/auth/auth.types'
+import { useAppDispatch } from '../redux/store'
+import { login } from '../redux/auth/auth.actions'
 
-type IFormsType = {
-	username: string
-	password: string
-}
-
-const schema: yup.SchemaOf<IFormsType> = yup.object({
+const schema: yup.SchemaOf<LoginData> = yup.object({
 	username: yup.string().required('Name is required'),
-	password: yup.string().min(5).max(20).required(),
+	password: yup.string().required('Password is required').min(5).max(20),
 })
 
 const Login: React.FC = () => {
-	const methods = useForm<IFormsType>({
+	const dispatch = useAppDispatch()
+	const methods = useForm<LoginData>({
 		resolver: yupResolver(schema),
 	})
 
-	const onSubmit: SubmitHandler<IFormsType> = (data: IFormsType) => {
-		console.log(data)
-		// reset('username')
-		// reset('password')
+	const onSubmit: SubmitHandler<LoginData> = (data: LoginData) => {
+		//@ts-ignore
+		dispatch(login(data))
 	}
 
 	return (

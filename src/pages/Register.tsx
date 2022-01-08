@@ -6,26 +6,28 @@ import Entry from '../components/Entry'
 import * as yup from 'yup'
 import FormField from '../components/FormField'
 import SubmitBtn from '../components/UI/SubmitBtn'
+import { RegisterData } from '../redux/auth/auth.types'
+import { register } from '../redux/auth/auth.actions'
+import { useAppDispatch } from '../redux/store'
 
-type IFormsType = {
-	username: string
-	password: string
-	confirm: string
-}
-
-const schema: yup.SchemaOf<IFormsType> = yup.object({
+const schema: yup.SchemaOf<RegisterData> = yup.object({
 	username: yup.string().required('Name is required'),
-	password: yup.string().min(5).max(20).required(),
-	confirm: yup.string().min(5).max(20).required(),
+	password: yup.string().required('Password is required').min(5).max(20),
+	confirmPassword: yup
+		.string()
+		.required('Confirm password is required')
+		.oneOf([yup.ref('password')], 'Passwords not match'),
 })
 
 const Register: React.FC = () => {
-	const methods = useForm<IFormsType>({
+	const dispatch = useAppDispatch()
+	const methods = useForm<RegisterData>({
 		resolver: yupResolver(schema),
 	})
 
-	const onSubmit: SubmitHandler<IFormsType> = (data: IFormsType) => {
-		console.log(data)
+	const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
+		//@ts-ignore
+		dispatch(register(data))
 	}
 
 	return (
@@ -37,7 +39,7 @@ const Register: React.FC = () => {
 
 				<FormField name='username' label='User name' />
 				<FormField name='password' label='Password' type='password' />
-				<FormField name='confirm' label='Confirm password' type='password' />
+				<FormField name='confirmPassword' label='Confirm password' type='password' />
 
 				<Box display='flex' alignItems='center' justifyContent='space-between'>
 					<Link to='/login'>go to login</Link>

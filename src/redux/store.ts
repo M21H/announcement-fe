@@ -1,8 +1,9 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux'
-import thunk from 'redux-thunk'
+import { applyMiddleware, combineReducers, compose, createStore, Action } from 'redux'
+import thunk, { ThunkAction } from 'redux-thunk'
+import authReducer from '../redux/auth/auth.reducer'
 
-const rootReducer = combineReducers({})
+const rootReducer = combineReducers({ auth: authReducer })
 
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
