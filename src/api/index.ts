@@ -1,20 +1,5 @@
 import axios from 'axios'
 import TokenService from '../service/storage.service'
-// import { store } from '../redux/store'
-// import { logout } from '../redux/auth/auth.actions'
-
-export enum APIStatusCode {
-	Success = 1,
-	Error = 0,
-}
-
-export type ResponseType<D = {}, SC = APIStatusCode> = {
-	data: D
-	status: SC
-	message?: {
-		error?: string
-	}
-}
 
 const config = {
 	baseURL: process.env.REACT_APP_BASE_URL,

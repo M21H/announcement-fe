@@ -1,14 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { makeStyles, Typography, Box } from '@material-ui/core'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import Entry from '../components/Entry'
 import * as yup from 'yup'
 import FormField from '../components/FormField'
 import SubmitBtn from '../components/UI/SubmitBtn'
 import { RegisterData } from '../redux/auth/auth.types'
 import { register } from '../redux/auth/auth.actions'
-import { useAppDispatch } from '../redux/store'
+import { useAppDispatch, useAppSelector } from '../redux/store'
+import { ILocation } from '../redux/types'
 
 const schema: yup.SchemaOf<RegisterData> = yup.object({
 	username: yup.string().required('Name is required'),
@@ -20,14 +21,22 @@ const schema: yup.SchemaOf<RegisterData> = yup.object({
 })
 
 const Register: React.FC = () => {
+	const location = useLocation<ILocation>()
+	const history = useHistory()
 	const dispatch = useAppDispatch()
+	const { isAuth } = useAppSelector(({ auth }) => auth)
+
 	const methods = useForm<RegisterData>({
 		resolver: yupResolver(schema),
 	})
 
 	const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
+		const { from } = location.state || { from: { pathname: '/' } }
 		//@ts-ignore
 		dispatch(register(data))
+		if (isAuth) {
+			history.replace(from)
+		}
 	}
 
 	return (

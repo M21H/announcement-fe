@@ -1,24 +1,27 @@
-import { Action, AuthActionType } from './auth.types'
+import { Nullable } from '../types'
+import { IAuthAction } from './auth.types'
 
-export interface State {
-	id: string | null
-	username: string | null
-	createdAt: string | null
-	isAuth: boolean
-}
+type IState = typeof initialState
 
 const initialState = {
-	id: null,
-	username: null,
-	createdAt: null,
+	id: null as Nullable<string>,
+	username: null as Nullable<string>,
+	createdAt: null as Nullable<string>,
 	isAuth: false,
+	error: '',
 }
 
-const authReducer = (state: State = initialState, action: Action): State => {
+const authReducer = (state = initialState, action: IAuthAction): IState => {
 	switch (action.type) {
-		case AuthActionType.GET_AUTH_USER_DATA_SUCCESS: {
+		case 'GET_AUTH_USER_DATA_SUCCESS': {
 			const { id, username, createdAt, isAuth } = action.payload
 			return { ...state, id, username, createdAt, isAuth }
+		}
+		case 'GET_AUTH_USER_DATA_ERROR': {
+			return {
+				...state,
+				error: action.payload,
+			}
 		}
 		default:
 			return state
