@@ -1,7 +1,6 @@
 //@ts-ignore
 import { IPost, IPostsThunk } from './posts.types'
 import APIPost from '../../api/post'
-import console from 'console'
 
 export const postsAction = {
 	setLoading: (boolean: boolean) => ({ type: 'SET_LOADING', payload: boolean } as const),
@@ -28,5 +27,17 @@ export const getPosts =
 		} catch (e) {
 			console.log(e)
 			// dispatch(postsAction.setError(e))
+		}
+	}
+
+export const deletePosts =
+	(id: number): IPostsThunk =>
+	async (dispatch) => {
+		try {
+			const data = APIPost.deletePost(id)
+			console.log(data)
+			dispatch(postsAction.deletePost(id))
+		} catch (e) {
+			console.log(e)
 		}
 	}

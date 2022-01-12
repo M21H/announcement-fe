@@ -2,7 +2,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { applyMiddleware, combineReducers, compose, createStore, Action } from 'redux'
 import thunk, { ThunkAction } from 'redux-thunk'
 import authReducer from '../redux/auth/auth.reducer'
-import PostsReducer from './posts/posts.reducer'
+import PostsReducer from '../redux/posts/posts.reducer'
 
 const rootReducer = combineReducers({ auth: authReducer, posts: PostsReducer })
 

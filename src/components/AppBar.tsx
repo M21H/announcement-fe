@@ -2,6 +2,7 @@ import React from 'react'
 import { alpha, makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Container, AppBar, Toolbar, IconButton, Typography, InputBase, MenuItem, Menu } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
+import { useAppSelector } from '../redux/store'
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -57,6 +58,7 @@ const Navbar: React.FC = () => {
 	const classes = useStyles()
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null)
+	const { username } = useAppSelector(({ auth }) => auth)
 
 	const isMenuOpen = Boolean(anchorEl)
 
@@ -116,8 +118,8 @@ const Navbar: React.FC = () => {
 							aria-haspopup='true'
 							onClick={handleProfileMenuOpen}
 							color='inherit'>
-							<Typography variant='h6' noWrap>
-								username
+							<Typography variant='h6' style={{ fontSize: '17px' }} noWrap>
+								{username}
 							</Typography>
 						</IconButton>
 					</Toolbar>
