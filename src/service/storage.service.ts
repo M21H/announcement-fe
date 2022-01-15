@@ -9,8 +9,8 @@ class TokenService {
 		localStorage.removeItem('authToken')
 	}
 
-	setPaginationCurrentPostPage(page: string) {
-		localStorage.setItem('currentPostPage', page)
+	setPaginationCurrentPostPage(page: number) {
+		localStorage.setItem('currentPostPage', JSON.stringify(page))
 	}
 	getPaginationCurrentPostPage() {
 		return localStorage.getItem('currentPostPage')

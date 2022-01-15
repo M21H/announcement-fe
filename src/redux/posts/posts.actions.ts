@@ -1,11 +1,11 @@
-//@ts-ignore
 import { IPost, IPostsThunk } from './posts.types'
 import APIPost from '../../api/post'
+import { IPostData } from '../../components/PostItem'
 
 export const postsAction = {
 	setLoading: (boolean: boolean) => ({ type: 'SET_LOADING', payload: boolean } as const),
 	setPosts: (posts: Array<IPost>) => ({ type: 'SET_POSTS', payload: posts } as const),
-	// updatePost: (id, post) => ({ type: 'UPDATE_POST', payload: { id, post } }),
+	updatePost: (id: number, post: IPost) => ({ type: 'UPDATE_POST', payload: { id, post } } as const),
 	createPost: (post: IPost) => ({ type: 'CREATE_POST', payload: post } as const),
 	deletePost: (id: number) => ({ type: 'DELETE_POST', payload: id } as const),
 	// setError: (payload) => ({ type: 'SET_ERROR', payload }),
@@ -27,6 +27,17 @@ export const getPosts =
 		} catch (e) {
 			console.log(e)
 			// dispatch(postsAction.setError(e))
+		}
+	}
+
+export const updatePost =
+	(id: number, data: IPostData): IPostsThunk =>
+	async (dispatch) => {
+		try {
+			const post = await APIPost.updatePost(id, data)
+			dispatch(postsAction.updatePost(id, post))
+		} catch (e) {
+			console.log(e)
 		}
 	}
 

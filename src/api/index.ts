@@ -21,7 +21,8 @@ client.interceptors.request.use((config) => {
 client.interceptors.response.use(
 	(response) => {
 		if (response.status === 200 || 201) {
-			const { token } = response.data.data
+			const token = response.data.data?.token
+			// const { token } = response.data?.data
 			if (token) {
 				TokenService.setAuthToken(token)
 			}

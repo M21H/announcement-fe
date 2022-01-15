@@ -5,15 +5,16 @@ import { useAppSelector } from '../redux/store'
 // import { string } from 'yup/lib/locale'
 
 type IFormField = {
-	label: string
 	name: string
+	label?: string
 	id?: number
 	type?: HTMLInputTypeAttribute
 	variant?: 'filled' | 'standard' | 'outlined'
 	margin?: 'normal' | 'dense' | 'none'
+	placeholder?: string 
 }
 
-const FormField: React.FC<IFormField> = ({ label, name, type, variant = 'outlined', margin = 'normal' }) => {
+const FormField: React.FC<IFormField> = ({ label, name, type, variant = 'outlined', margin = 'normal', placeholder }) => {
 	const {
 		register,
 		formState: { errors },
@@ -28,6 +29,7 @@ const FormField: React.FC<IFormField> = ({ label, name, type, variant = 'outline
 			fullWidth
 			error={!!errors[name]}
 			helperText={errors[name]?.message ?? ''}
+			placeholder={placeholder}
 			{...register(name)}
 		/>
 	)

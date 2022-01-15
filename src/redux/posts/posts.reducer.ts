@@ -29,6 +29,11 @@ const PostsReducer = (state = initialState, action: IPostAction): IState => {
 				...state,
 				isLoading: action.payload,
 			}
+		case 'UPDATE_POST':
+			return {
+				...state,
+				items: state.items.map((item) => (item._id === action.payload.id ? action.payload.post : item)),
+			}
 		case 'DELETE_POST':
 			return {
 				...state,

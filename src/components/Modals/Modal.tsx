@@ -1,9 +1,8 @@
-import React from 'react'
+//@ts-nocheck
+import React, { forwardRef, useImperativeHandle } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Modal from '@material-ui/core/Modal'
 import cn from 'classnames'
-import { Box, Button } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -23,41 +22,40 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 )
 
-type IBaseModal = {
+interface IBaseModal {
 	title: string
 	children: React.ReactNode
 }
 
-const BaseModal: React.FC<IBaseModal> = ({ title, children }) => {
+const BaseModal: React.FC<IBaseModal> = ({ title, children }, ref) => {
 	const classes = useStyles()
-	const [open, setOpen] = React.useState(false)
+	const [display, setDisplay] = React.useState(false)
 
 	const handleOpen = () => {
-		setOpen(true)
+		setDisplay(true)
 	}
 
 	const handleClose = () => {
-		setOpen(false)
+		setDisplay(false)
 	}
+
+	useImperativeHandle(ref, () => ({
+		onModalClose: () => handleClose(),
+		onModalOpen: () => handleOpen(),
+	}))
 
 	const body = (
 		<div className={cn(classes.paper, classes.modal)}>
 			<h2 style={{ textAlign: 'center' }}>{title}</h2>
-
 			{children}
 		</div>
 	)
 
-	return (
-		<>
-			<Button size='small' onClick={handleOpen}>
-				Edit
-			</Button>
-			<Modal open={open} onClose={handleClose} aria-labelledby='simple-modal-title' aria-describedby='simple-modal-description'>
-				{body}
-			</Modal>
-		</>
-	)
+	return display ? (
+		<Modal open={display} onClose={handleClose} aria-labelledby='simple-modal-title' aria-describedby='simple-modal-description'>
+			{body}
+		</Modal>
+	) : null
 }
 
-export default BaseModal
+export default forwardRef(BaseModal)
