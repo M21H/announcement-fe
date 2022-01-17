@@ -3,8 +3,9 @@ import { applyMiddleware, combineReducers, compose, createStore, Action } from '
 import thunk, { ThunkAction } from 'redux-thunk'
 import authReducer from '../redux/auth/auth.reducer'
 import PostsReducer from '../redux/posts/posts.reducer'
+import { AppReducer } from './app/app.reducer'
 
-const rootReducer = combineReducers({ auth: authReducer, posts: PostsReducer })
+const rootReducer = combineReducers({ auth: authReducer, posts: PostsReducer, app: AppReducer })
 
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose

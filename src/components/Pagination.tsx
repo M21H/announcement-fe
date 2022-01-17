@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 		margin: '0 10px',
 	},
 	active: {
-		fontWeight: 'bolder',
+		fontWeight: 'bold',
 		textDecoration: 'underline',
 	},
 	list: {
@@ -43,7 +43,7 @@ const Pagination = ({ portionSize = 3 }) => {
 
 	useEffect(() => {
 		setPortionNumber(Math.ceil(currentPage / portionSize))
-	}, [currentPage])
+	}, [currentPage, portionSize])
 
 	const leftPortionPageNumber = (portionNumber - 1) * portionSize + 1
 	const rightPortionPageNumber = portionNumber * portionSize
@@ -60,8 +60,8 @@ const Pagination = ({ portionSize = 3 }) => {
 	return (
 		<div className={classes.container}>
 			<ul className={classes.list}>
-				<Button variant='contained' color='primary' disabled={portionNumber <= 1} onClick={() => setPortionNumber(portionNumber - 1)}>
-					next
+				<Button variant='contained' disabled={portionNumber <= 1} onClick={() => setPortionNumber(portionNumber - 1)}>
+					prev
 				</Button>
 				{pages
 					.filter((page) => page >= leftPortionPageNumber && page <= rightPortionPageNumber)
@@ -74,7 +74,7 @@ const Pagination = ({ portionSize = 3 }) => {
 							{page}
 						</li>
 					))}
-				<Button variant='contained' color='primary' disabled={portionCount <= portionNumber} onClick={() => setPortionNumber(portionNumber + 1)}>
+				<Button variant='contained' disabled={portionCount <= portionNumber} onClick={() => setPortionNumber(portionNumber + 1)}>
 					next
 				</Button>
 			</ul>

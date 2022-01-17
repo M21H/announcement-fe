@@ -20,7 +20,7 @@ const Login: React.FC = () => {
 	const location = useLocation<ILocation>()
 	const history = useHistory()
 	const dispatch = useAppDispatch()
-	const { isAuth, error } = useAppSelector(({ auth }) => auth)
+	const { error } = useAppSelector(({ auth }) => auth)
 
 	const methods = useForm<LoginData>({
 		resolver: yupResolver(schema),
@@ -29,10 +29,9 @@ const Login: React.FC = () => {
 	const onSubmit: SubmitHandler<LoginData> = (data: LoginData) => {
 		const { from } = location.state || { from: { pathname: '/' } }
 		// @ts-ignore
-		dispatch(login(data))
-		if (isAuth) {
+		dispatch(login(data)).then(() => {
 			history.replace(from)
-		}
+		})
 	}
 
 	return (

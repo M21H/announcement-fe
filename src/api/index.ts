@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { logout } from '../redux/auth/auth.actions'
+import { store } from '../redux/store'
 import TokenService from '../service/storage.service'
 
 const config = {
@@ -31,7 +33,8 @@ client.interceptors.response.use(
 	},
 	(error) => {
 		if (error.response.status === 401) {
-			// store.dispatch(logout())
+			//@ts-ignore
+			store.dispatch(logout())
 		}
 		return Promise.reject(error)
 	}

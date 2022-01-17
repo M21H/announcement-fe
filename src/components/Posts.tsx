@@ -1,7 +1,7 @@
 import { LinearProgress } from '@material-ui/core'
 import { useAppSelector } from '../redux/store'
 import Pagination from './Pagination'
-import { PostItem } from './PostItem'
+import PostItem from './PostItem'
 
 const Posts: React.FC = () => {
 	const { items, isLoading } = useAppSelector(({ posts }) => posts)

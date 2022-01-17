@@ -15,18 +15,16 @@ export const postsAction = {
 }
 
 export const getPosts =
-	(currentPage: number, pageSize: number): IPostsThunk =>
+	(currentPage: number = 1, pageSize: number = 4): IPostsThunk =>
 	async (dispatch) => {
 		dispatch(postsAction.setLoading(true))
 		try {
 			const { data, total } = await APIPost.fetchPosts(currentPage, pageSize)
 			dispatch(postsAction.setTotalPostsCount(total))
 			dispatch(postsAction.setPosts(data))
-
 			dispatch(postsAction.setLoading(false))
 		} catch (e) {
 			console.log(e)
-			// dispatch(postsAction.setError(e))
 		}
 	}
 
@@ -41,13 +39,23 @@ export const updatePost =
 		}
 	}
 
+export const createPost =
+	(author: string, title: string, desc: string): IPostsThunk =>
+	async (dispatch) => {
+		try {
+			await APIPost.createPost(author, title, desc)
+			dispatch(getPosts())
+		} catch (e) {
+			console.log(e)
+		}
+	}
+
 export const deletePosts =
 	(id: number): IPostsThunk =>
 	async (dispatch) => {
 		try {
-			const data = APIPost.deletePost(id)
-			console.log(data)
-			dispatch(postsAction.deletePost(id))
+			await APIPost.deletePost(id)
+			dispatch(getPosts())
 		} catch (e) {
 			console.log(e)
 		}

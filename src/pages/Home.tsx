@@ -5,7 +5,7 @@ import { getPosts } from '../redux/posts/posts.actions'
 import { useAppDispatch, useAppSelector } from '../redux/store'
 
 const Home: React.FC = () => {
-	const { items, pageSize, currentPage, isLoading } = useAppSelector(({ posts }) => posts)
+	const { pageSize, currentPage } = useAppSelector(({ posts }) => posts)
 
 	const dispatch = useAppDispatch()
 	useEffect(() => {

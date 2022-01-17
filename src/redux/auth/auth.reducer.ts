@@ -7,7 +7,7 @@ const initialState = {
 	id: null as Nullable<string>,
 	username: null as Nullable<string>,
 	createdAt: null as Nullable<string>,
-	isAuth: true,
+	isAuth: false,
 	error: '',
 }
 

@@ -1,8 +1,14 @@
-import React from 'react'
+import React, { memo, useRef, useState } from 'react'
 import { alpha, makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { Container, AppBar, Toolbar, IconButton, Typography, InputBase, MenuItem, Menu } from '@material-ui/core'
+import { Container, AppBar, Toolbar, IconButton, Typography, InputBase, MenuItem, Menu, TextField, Box, Button } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
-import { useAppSelector } from '../redux/store'
+import { useAppDispatch, useAppSelector } from '../redux/store'
+import { logout } from '../redux/auth/auth.actions'
+import { Link } from 'react-router-dom'
+import { createPost } from '../redux/posts/posts.actions'
+
+import BaseModal from '../components/Modals/Modal'
+import { IPostData } from './PostItem'
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -13,6 +19,10 @@ const useStyles = makeStyles((theme: Theme) =>
 			display: 'none',
 			[theme.breakpoints.up('sm')]: {
 				display: 'block',
+			},
+			'& a': {
+				color: 'inherit',
+				textDecoration: 'none',
 			},
 		},
 		search: {
@@ -51,14 +61,30 @@ const useStyles = makeStyles((theme: Theme) =>
 				width: '20ch',
 			},
 		},
+
+		textField: {
+			marginLeft: theme.spacing(1),
+			marginRight: theme.spacing(1),
+			width: '700px',
+		},
+		textFieldActions: {
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'flex-end',
+			'& button': {
+				marginLeft: theme.spacing(2),
+			},
+		},
 	})
 )
 
 const Navbar: React.FC = () => {
 	const classes = useStyles()
-	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null)
+	const dispatch = useAppDispatch()
+	const [fieldsValue, setFieldsValue] = useState<IPostData>({ author: '', title: '', desc: '' })
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 	const { username } = useAppSelector(({ auth }) => auth)
+	const modalRef = useRef<typeof BaseModal>(null)
 
 	const isMenuOpen = Boolean(anchorEl)
 
@@ -66,13 +92,32 @@ const Navbar: React.FC = () => {
 		setAnchorEl(event.currentTarget)
 	}
 
-	const handleMobileMenuClose = () => {
-		setMobileMoreAnchorEl(null)
-	}
-
 	const handleMenuClose = () => {
 		setAnchorEl(null)
-		handleMobileMenuClose()
+	}
+
+	const handleLogout = () => {
+		//@ts-ignore
+		dispatch(logout())
+	}
+
+	const modalOpen = () => {
+		//@ts-ignore
+		modalRef.current?.onModalOpen()
+	}
+	const modalClose = () => {
+		//@ts-ignore
+		modalRef.current?.onModalClose()
+	}
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setFieldsValue({ ...fieldsValue, [e.target.name]: e.target.value })
+	}
+
+	const handleCreatePost = () => {
+		//@ts-ignore
+		dispatch(createPost(fieldsValue.author, fieldsValue.title, fieldsValue.desc))
+		modalClose()
 	}
 
 	const menuId = 'primary-search-account-menu'
@@ -85,17 +130,18 @@ const Navbar: React.FC = () => {
 			transformOrigin={{ vertical: 'top', horizontal: 'right' }}
 			open={isMenuOpen}
 			onClose={handleMenuClose}>
-			<MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+			<MenuItem onClick={modalOpen}>Create post</MenuItem>
+			<MenuItem onClick={handleLogout}>Logout</MenuItem>
 		</Menu>
 	)
 
 	return (
 		<div className={classes.grow}>
-			<AppBar position='static' style={{ backgroundColor: '#000' }}>
+			<AppBar position='sticky' style={{ backgroundColor: '#000' }}>
 				<Container maxWidth='lg'>
 					<Toolbar>
 						<Typography className={classes.title} variant='h6' noWrap>
-							Announcement
+							<Link to='/'>Announcement</Link>
 						</Typography>
 						<div className={classes.search}>
 							<div className={classes.searchIcon}>
@@ -126,8 +172,44 @@ const Navbar: React.FC = () => {
 				</Container>
 			</AppBar>
 			{renderMenu}
+			<BaseModal ref={modalRef} title='Create post'>
+				<TextField
+					value={fieldsValue.author}
+					onChange={handleInputChange}
+					name='author'
+					label='author'
+					className={classes.textField}
+					margin='normal'
+					variant='outlined'
+				/>
+				<TextField
+					value={fieldsValue.title}
+					onChange={handleInputChange}
+					name='title'
+					label='title'
+					className={classes.textField}
+					margin='normal'
+					variant='outlined'
+				/>
+				<TextField
+					value={fieldsValue.desc}
+					onChange={handleInputChange}
+					name='desc'
+					label='desc'
+					className={classes.textField}
+					multiline
+					rows={10}
+					margin='normal'
+					variant='outlined'
+				/>
+				<Box m={1} alignContent='center' className={classes.textFieldActions}>
+					<Button variant='contained' color='primary' onClick={handleCreatePost}>
+						Create post
+					</Button>
+				</Box>
+			</BaseModal>
 		</div>
 	)
 }
 
-export default Navbar
+export default memo(Navbar)

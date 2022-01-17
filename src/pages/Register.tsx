@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { makeStyles, Typography, Box } from '@material-ui/core'
+import { Typography, Box } from '@material-ui/core'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import Entry from '../components/Entry'
@@ -24,7 +24,6 @@ const Register: React.FC = () => {
 	const location = useLocation<ILocation>()
 	const history = useHistory()
 	const dispatch = useAppDispatch()
-	const { isAuth } = useAppSelector(({ auth }) => auth)
 
 	const methods = useForm<RegisterData>({
 		resolver: yupResolver(schema),
@@ -33,10 +32,9 @@ const Register: React.FC = () => {
 	const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
 		const { from } = location.state || { from: { pathname: '/' } }
 		//@ts-ignore
-		dispatch(register(data))
-		if (isAuth) {
+		dispatch(register(data)).then(() => {
 			history.replace(from)
-		}
+		})
 	}
 
 	return (

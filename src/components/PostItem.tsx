@@ -6,42 +6,15 @@ import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import { IPost } from '../redux/posts/posts.types'
-import { Box, Container, createStyles, TextField, Theme } from '@material-ui/core'
+import { Box, Container, TextField, Theme } from '@material-ui/core'
 import BaseModal from './Modals/Modal'
 import { deletePosts, updatePost } from '../redux/posts/posts.actions'
 import { useAppDispatch } from '../redux/store'
-
-// const useStyles = makeStyles((theme: Theme) =>
-// 	createStyles({
-// 		root: {
-// 			width: '100%',
-// 			backgroundColor: '#15aca6',
-// 		},
-// 		cardBtn: {
-// 			color: '#000',
-// 		},
-// 		textField: {
-// 			marginLeft: theme.spacing(1),
-// 			marginRight: theme.spacing(1),
-// 			width: '700px',
-// 		},
-// 		textFieldActions: {
-// 			display: 'flex',
-// 			justifyContent: 'flex-end',
-// 			'& button': {
-// 				marginLeft: theme.spacing(2),
-// 			},
-// 		},
-// 	})
-// )
 
 const useStyles = makeStyles((theme: Theme) => ({
 	root: {
 		width: '100%',
 		backgroundColor: '#15aca6',
-	},
-	cardBtn: {
-		color: '#000',
 	},
 	textField: {
 		marginLeft: theme.spacing(1),
@@ -50,6 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 	},
 	textFieldActions: {
 		display: 'flex',
+		alignItems: 'center',
 		justifyContent: 'flex-end',
 		'& button': {
 			marginLeft: theme.spacing(2),
@@ -63,15 +37,11 @@ export interface IPostData {
 	desc: string
 }
 
-export const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
+const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 	const dispatch = useAppDispatch()
 	const classes = useStyles()
-	const modalRef = useRef()
-	const [fieldsValue, setFieldsValue] = useState<IPostData>({
-		author: '',
-		title: '',
-		desc: '',
-	})
+	const modalRef = useRef<typeof BaseModal>(null)
+	const [fieldsValue, setFieldsValue] = useState<IPostData>({ author: '', title: '', desc: '' })
 
 	const data: IPostData = {
 		author: fieldsValue.author,
@@ -89,17 +59,20 @@ export const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 
 	const modalOpen = () => {
 		//@ts-ignore
-		modalRef.current.onModalOpen()
+		modalRef.current?.onModalOpen()
+	}
+	const modalClose = () => {
+		//@ts-ignore
+		modalRef.current?.onModalClose()
 	}
 
 	const handleUpdate = useCallback(
 		(id: number, data: IPostData) => {
 			//@ts-ignore
 			dispatch(updatePost(id, data))
-			//@ts-ignore
-			modalRef.current.onModalClose()
+			modalClose()
 		},
-		[_id]
+		[dispatch]
 	)
 
 	const handleDelete = useCallback(
@@ -110,8 +83,12 @@ export const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 				dispatch(deletePosts(id))
 			}
 		},
-		[_id]
+		[dispatch]
 	)
+
+	const handleClear = useCallback(() => {
+		setFieldsValue({ author: '', title: '', desc: '' })
+	}, [dispatch])
 
 	return (
 		<Box m={3}>
@@ -127,11 +104,10 @@ export const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 					</CardContent>
 
 					<CardActions>
-						{/* <CardActionArea> */}
-						<Button size='small' className={classes.cardBtn}>
+						<Button size='small' variant='contained'>
 							About
 						</Button>
-						<Button size='small' className={classes.cardBtn} onClick={modalOpen}>
+						<Button size='small' variant='contained' onClick={modalOpen}>
 							Edit
 						</Button>
 						<BaseModal ref={modalRef} title='Edit post'>
@@ -167,8 +143,8 @@ export const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 								margin='normal'
 								variant='outlined'
 							/>
-							<Box m={1} className={classes.textFieldActions}>
-								<Button variant='contained' color='primary'>
+							<Box m={1} alignContent='center' className={classes.textFieldActions}>
+								<Button variant='contained' color='primary' onClick={handleClear}>
 									Clear fields
 								</Button>
 								<Button variant='contained' color='primary' onClick={() => handleUpdate(_id, data)}>
@@ -185,3 +161,5 @@ export const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 		</Box>
 	)
 }
+
+export default PostItem

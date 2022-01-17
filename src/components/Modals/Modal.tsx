@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { forwardRef, useImperativeHandle } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Modal from '@material-ui/core/Modal'
@@ -58,4 +57,5 @@ const BaseModal: React.FC<IBaseModal> = ({ title, children }, ref) => {
 	) : null
 }
 
+//@ts-ignore
 export default forwardRef(BaseModal)

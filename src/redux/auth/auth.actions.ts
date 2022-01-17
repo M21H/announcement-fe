@@ -3,6 +3,7 @@ import { IAuthThunk, LoginData, RegisterData } from './auth.types'
 import APIAuth from '../../api/auth'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { APIStatusCode } from '../types/APITypes'
+import { initializeApp } from '../app/app.action'
 
 type JwtPayloadType = JwtPayload & { id: string; username: string; createdAt: string }
 
@@ -19,15 +20,22 @@ export const authAction = {
 		} as const),
 }
 
+export const getAuthUserData = (): IAuthThunk => async (dispatch) => {
+	const decoded = jwtDecode<JwtPayloadType>(TokenService.getAuthToken() || '')
+	if (decoded) {
+		dispatch(authAction.setAuthData(decoded.id, decoded.username, decoded.createdAt, true))
+	} else {
+		dispatch(authAction.setAuthData(null, null, null, false))
+	}
+}
+
 export const login =
 	(loginData: LoginData): IAuthThunk =>
 	async (dispatch) => {
 		try {
 			const { status, data } = await APIAuth.login(loginData)
-			const decoded = jwtDecode<JwtPayloadType>(TokenService.getAuthToken() || '')
 			if (status === APIStatusCode.Success) {
-				dispatch(authAction.setAuthData(decoded.id, decoded.username, decoded.createdAt, true))
-				dispatch(authAction.setAuthError(''))
+				dispatch(initializeApp())
 			}
 			if (status === APIStatusCode.Error) {
 				//@ts-ignore
@@ -43,9 +51,8 @@ export const register =
 	async (dispatch) => {
 		try {
 			const { status } = await APIAuth.register(data)
-			const decoded = jwtDecode<JwtPayloadType>(TokenService.getAuthToken() || '')
 			if (status === APIStatusCode.Success) {
-				dispatch(authAction.setAuthData(decoded.id, decoded.username, decoded.createdAt, true))
+				dispatch(initializeApp())
 			}
 		} catch (e) {
 			console.log(e)
