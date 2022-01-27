@@ -5,7 +5,7 @@ export type IPostAction = InferActionsTypes<typeof postsAction>
 export type IPostsThunk = BaseThunkType<IPostAction>
 
 export interface IPost {
-  _id: number
+  _id: string
 	author: string
 	title: string
 	desc: string

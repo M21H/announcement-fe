@@ -7,11 +7,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }))
 
-type ISubmitBtn = {
+type IMySubmit = {
 	children: React.ReactNode
 }
 
-const SubmitBtn: React.FC<ISubmitBtn> = ({ children }) => {
+const MySubmit: React.FC<IMySubmit> = ({ children }) => {
 	const classes = useStyles()
 	return (
 		<Button className={classes.submit} type='submit' variant='contained' color='primary'>
@@ -20,4 +20,4 @@ const SubmitBtn: React.FC<ISubmitBtn> = ({ children }) => {
 	)
 }
 
-export default SubmitBtn
+export default MySubmit

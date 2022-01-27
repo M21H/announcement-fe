@@ -1,6 +1,6 @@
 import TokenService from '../../service/storage.service'
 import { IAuthThunk, LoginData, RegisterData } from './auth.types'
-import APIAuth from '../../api/auth'
+import AuthService from '../../API/AuthService'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { APIStatusCode } from '../types/APITypes'
 import { initializeApp } from '../app/app.action'
@@ -33,7 +33,7 @@ export const login =
 	(loginData: LoginData): IAuthThunk =>
 	async (dispatch) => {
 		try {
-			const { status, data } = await APIAuth.login(loginData)
+			const { status, data } = await AuthService.login(loginData)
 			if (status === APIStatusCode.Success) {
 				dispatch(initializeApp())
 			}
@@ -50,7 +50,7 @@ export const register =
 	(data: RegisterData): IAuthThunk =>
 	async (dispatch) => {
 		try {
-			const { status } = await APIAuth.register(data)
+			const { status } = await AuthService.register(data)
 			if (status === APIStatusCode.Success) {
 				dispatch(initializeApp())
 			}

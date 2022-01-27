@@ -5,11 +5,11 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Entry from '../components/Entry'
 import FormField from '../components/FormField'
-import SubmitBtn from '../components/UI/SubmitBtn'
+import MySubmit from '../components/UI/button/MySubmit'
 import { LoginData } from '../redux/auth/auth.types'
-import { useAppDispatch, useAppSelector } from '../redux/store'
-import { login } from '../redux/auth/auth.actions'
+import { useAppSelector } from '../redux/store'
 import { ILocation } from '../redux/types'
+import { useAppActions } from '../hooks/useAppActions'
 
 const schema: yup.SchemaOf<LoginData> = yup.object({
 	username: yup.string().required('Name is required'),
@@ -19,7 +19,7 @@ const schema: yup.SchemaOf<LoginData> = yup.object({
 const Login: React.FC = () => {
 	const location = useLocation<ILocation>()
 	const history = useHistory()
-	const dispatch = useAppDispatch()
+	const { login } = useAppActions()
 	const { error } = useAppSelector(({ auth }) => auth)
 
 	const methods = useForm<LoginData>({
@@ -27,9 +27,9 @@ const Login: React.FC = () => {
 	})
 
 	const onSubmit: SubmitHandler<LoginData> = (data: LoginData) => {
-		const { from } = location.state || { from: { pathname: '/' } }
-		// @ts-ignore
-		dispatch(login(data)).then(() => {
+		const { from } = location.state || { from: { pathname: '/posts' } }
+		//@ts-ignore
+		login(data).then(() => {
 			history.replace(from)
 		})
 	}
@@ -48,7 +48,7 @@ const Login: React.FC = () => {
 
 				<Box display='flex' alignItems='center' justifyContent='space-between'>
 					<Link to='/register'>go to registration</Link>
-					<SubmitBtn>Login</SubmitBtn>
+					<MySubmit>Login</MySubmit>
 				</Box>
 			</Entry>
 		</FormProvider>

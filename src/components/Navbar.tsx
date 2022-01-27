@@ -2,17 +2,18 @@ import React, { memo, useRef, useState } from 'react'
 import { alpha, makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Container, AppBar, Toolbar, IconButton, Typography, InputBase, MenuItem, Menu, TextField, Box, Button } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
-import { useAppDispatch, useAppSelector } from '../redux/store'
-import { logout } from '../redux/auth/auth.actions'
+import { useAppSelector } from '../redux/store'
 import { Link } from 'react-router-dom'
-import { createPost } from '../redux/posts/posts.actions'
-
-import BaseModal from '../components/Modals/Modal'
+import BaseModal from './Modals/Modal'
 import { IPostData } from './PostItem'
+import { useAppActions } from '../hooks/useAppActions'
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		grow: {
+			position: 'sticky',
+			top: 0,
+			zIndex: 100,
 			flexGrow: 1,
 		},
 		title: {
@@ -26,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
 			},
 		},
 		search: {
+			display: 'flex',
+			alignItems: 'center',
+
 			position: 'relative',
 			borderRadius: theme.shape.borderRadius,
 			backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -38,6 +42,13 @@ const useStyles = makeStyles((theme: Theme) =>
 			[theme.breakpoints.up('sm')]: {
 				marginLeft: theme.spacing(3),
 				width: 'auto',
+			},
+		},
+		searchBtn: {
+			color: 'white',
+			backgroundColor: alpha(theme.palette.common.white, 0.15),
+			'&:hover': {
+				backgroundColor: alpha(theme.palette.common.white, 0.25),
 			},
 		},
 		searchIcon: {
@@ -80,10 +91,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Navbar: React.FC = () => {
 	const classes = useStyles()
-	const dispatch = useAppDispatch()
+	const { username, search } = useAppSelector(({ auth, posts }) => ({
+		username: auth.username,
+		search: posts.search,
+	}))
+
+	const { logout, setSearch, createPost } = useAppActions()
 	const [fieldsValue, setFieldsValue] = useState<IPostData>({ author: '', title: '', desc: '' })
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-	const { username } = useAppSelector(({ auth }) => auth)
 	const modalRef = useRef<typeof BaseModal>(null)
 
 	const isMenuOpen = Boolean(anchorEl)
@@ -91,16 +106,9 @@ const Navbar: React.FC = () => {
 	const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget)
 	}
-
 	const handleMenuClose = () => {
 		setAnchorEl(null)
 	}
-
-	const handleLogout = () => {
-		//@ts-ignore
-		dispatch(logout())
-	}
-
 	const modalOpen = () => {
 		//@ts-ignore
 		modalRef.current?.onModalOpen()
@@ -109,15 +117,15 @@ const Navbar: React.FC = () => {
 		//@ts-ignore
 		modalRef.current?.onModalClose()
 	}
-
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFieldsValue({ ...fieldsValue, [e.target.name]: e.target.value })
 	}
-
 	const handleCreatePost = () => {
-		//@ts-ignore
-		dispatch(createPost(fieldsValue.author, fieldsValue.title, fieldsValue.desc))
+		createPost(fieldsValue.author, fieldsValue.title, fieldsValue.desc)
 		modalClose()
+	}
+	const handleQuerySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSearch(e.target.value)
 	}
 
 	const menuId = 'primary-search-account-menu'
@@ -131,7 +139,7 @@ const Navbar: React.FC = () => {
 			open={isMenuOpen}
 			onClose={handleMenuClose}>
 			<MenuItem onClick={modalOpen}>Create post</MenuItem>
-			<MenuItem onClick={handleLogout}>Logout</MenuItem>
+			<MenuItem onClick={logout}>Logout</MenuItem>
 		</Menu>
 	)
 
@@ -141,20 +149,23 @@ const Navbar: React.FC = () => {
 				<Container maxWidth='lg'>
 					<Toolbar>
 						<Typography className={classes.title} variant='h6' noWrap>
-							<Link to='/'>Announcement</Link>
+							<Link to='/posts'>Announcement</Link>
 						</Typography>
 						<div className={classes.search}>
 							<div className={classes.searchIcon}>
 								<SearchIcon />
 							</div>
 							<InputBase
-								placeholder='Search…'
+								placeholder='Search...'
+								value={search}
+								onChange={handleQuerySearch}
 								classes={{
 									root: classes.inputRoot,
 									input: classes.inputInput,
 								}}
 								inputProps={{ 'aria-label': 'search' }}
 							/>
+							{/* <ClearIcon /> */}
 						</div>
 						<div className={classes.grow} />
 						<IconButton

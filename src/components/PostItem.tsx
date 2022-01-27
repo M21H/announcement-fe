@@ -8,8 +8,8 @@ import Typography from '@material-ui/core/Typography'
 import { IPost } from '../redux/posts/posts.types'
 import { Box, Container, TextField, Theme } from '@material-ui/core'
 import BaseModal from './Modals/Modal'
-import { deletePosts, updatePost } from '../redux/posts/posts.actions'
-import { useAppDispatch } from '../redux/store'
+import { Link } from 'react-router-dom'
+import { useAppActions } from '../hooks/useAppActions'
 
 const useStyles = makeStyles((theme: Theme) => ({
 	root: {
@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 			marginLeft: theme.spacing(2),
 		},
 	},
+	link: {
+		textDecoration: 'none',
+	},
 }))
 
 export interface IPostData {
@@ -38,7 +41,7 @@ export interface IPostData {
 }
 
 const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
-	const dispatch = useAppDispatch()
+	const { updatePost, deletePost } = useAppActions()
 	const classes = useStyles()
 	const modalRef = useRef<typeof BaseModal>(null)
 	const [fieldsValue, setFieldsValue] = useState<IPostData>({ author: '', title: '', desc: '' })
@@ -66,29 +69,21 @@ const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 		modalRef.current?.onModalClose()
 	}
 
-	const handleUpdate = useCallback(
-		(id: number, data: IPostData) => {
-			//@ts-ignore
-			dispatch(updatePost(id, data))
-			modalClose()
-		},
-		[dispatch]
-	)
+	const handleUpdate = useCallback((id: string, data: IPostData) => {
+		updatePost(id, data)
+		modalClose()
+	}, [])
 
-	const handleDelete = useCallback(
-		(id: number) => {
-			const confirm = window.confirm('are you sure?')
-			if (confirm) {
-				//@ts-ignore
-				dispatch(deletePosts(id))
-			}
-		},
-		[dispatch]
-	)
+	const handleDelete = useCallback((id: string) => {
+		const confirm = window.confirm('are you sure?')
+		if (confirm) {
+			deletePost(id)
+		}
+	}, [])
 
 	const handleClear = useCallback(() => {
 		setFieldsValue({ author: '', title: '', desc: '' })
-	}, [dispatch])
+	}, [])
 
 	return (
 		<Box m={3}>
@@ -104,9 +99,12 @@ const PostItem: React.FC<IPost> = ({ _id, author, desc, title }) => {
 					</CardContent>
 
 					<CardActions>
-						<Button size='small' variant='contained'>
-							About
-						</Button>
+						<Link to={`/posts/${_id}`} className={classes.link}>
+							<Button size='small' variant='contained'>
+								About
+							</Button>
+						</Link>
+
 						<Button size='small' variant='contained' onClick={modalOpen}>
 							Edit
 						</Button>

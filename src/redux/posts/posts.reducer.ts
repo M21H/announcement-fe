@@ -6,8 +6,9 @@ type IState = typeof initialState
 
 const initialState = {
 	items: [] as Array<IPost>,
+	search: '',
 	isLoading: false,
-	pageSize: 4,
+	pageSize: 10,
 	totalPagesCount: null as Nullable<number>,
 	currentPage: Number(TokenService.getPaginationCurrentPostPage()) || 1,
 }
@@ -34,15 +35,20 @@ const PostsReducer = (state = initialState, action: IPostAction): IState => {
 				...state,
 				items: state.items.map((item) => (item._id === action.payload.id ? action.payload.post : item)),
 			}
-		// case 'DELETE_POST':
-		// 	return {
-		// 		...state,
-		// 		items: state.items.filter((item) => item._id !== action.payload),
-		// 	}
+		case 'SET_SEARCH_ITEM':
+			return {
+				...state,
+				search: action.payload,
+			}
 		case 'SET_CURRENT_PAGE':
 			return {
 				...state,
 				currentPage: action.payload,
+			}
+		case 'DELETE_POST':
+			return {
+				...state,
+				items: state.items.filter((item) => item._id !== action.payload),
 			}
 		default:
 			return state

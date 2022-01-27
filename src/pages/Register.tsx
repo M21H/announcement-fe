@@ -5,11 +5,10 @@ import { Link, useHistory, useLocation } from 'react-router-dom'
 import Entry from '../components/Entry'
 import * as yup from 'yup'
 import FormField from '../components/FormField'
-import SubmitBtn from '../components/UI/SubmitBtn'
+import MySubmit from '../components/UI/button/MySubmit'
 import { RegisterData } from '../redux/auth/auth.types'
-import { register } from '../redux/auth/auth.actions'
-import { useAppDispatch, useAppSelector } from '../redux/store'
 import { ILocation } from '../redux/types'
+import { useAppActions } from '../hooks/useAppActions'
 
 const schema: yup.SchemaOf<RegisterData> = yup.object({
 	username: yup.string().required('Name is required'),
@@ -23,16 +22,16 @@ const schema: yup.SchemaOf<RegisterData> = yup.object({
 const Register: React.FC = () => {
 	const location = useLocation<ILocation>()
 	const history = useHistory()
-	const dispatch = useAppDispatch()
+	const { register } = useAppActions()
 
 	const methods = useForm<RegisterData>({
 		resolver: yupResolver(schema),
 	})
 
 	const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
-		const { from } = location.state || { from: { pathname: '/' } }
+		const { from } = location.state || { from: { pathname: '/posts' } }
 		//@ts-ignore
-		dispatch(register(data)).then(() => {
+		register(data).then(() => {
 			history.replace(from)
 		})
 	}
@@ -50,7 +49,7 @@ const Register: React.FC = () => {
 
 				<Box display='flex' alignItems='center' justifyContent='space-between'>
 					<Link to='/login'>go to login</Link>
-					<SubmitBtn>Register</SubmitBtn>
+					<MySubmit>Register</MySubmit>
 				</Box>
 			</Entry>
 		</FormProvider>

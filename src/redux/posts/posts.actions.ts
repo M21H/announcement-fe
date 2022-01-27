@@ -1,17 +1,21 @@
 import { IPost, IPostsThunk } from './posts.types'
-import APIPost from '../../api/post'
+import PostService from '../../API/PostService'
 import { IPostData } from '../../components/PostItem'
 
 export const postsAction = {
 	setLoading: (boolean: boolean) => ({ type: 'SET_LOADING', payload: boolean } as const),
 	setPosts: (posts: Array<IPost>) => ({ type: 'SET_POSTS', payload: posts } as const),
-	updatePost: (id: number, post: IPost) => ({ type: 'UPDATE_POST', payload: { id, post } } as const),
+	updatePost: (id: string, post: IPost) => ({ type: 'UPDATE_POST', payload: { id, post } } as const),
 	createPost: (post: IPost) => ({ type: 'CREATE_POST', payload: post } as const),
-	deletePost: (id: number) => ({ type: 'DELETE_POST', payload: id } as const),
+	deletePost: (id: string) => ({ type: 'DELETE_POST', payload: id } as const),
 	// setError: (payload) => ({ type: 'SET_ERROR', payload }),
 
 	setCurrentPage: (pageNumber: number) => ({ type: 'SET_CURRENT_PAGE', payload: pageNumber } as const),
 	setTotalPostsCount: (count: number) => ({ type: 'SET_TOTAL_PAGE_COUNT', payload: count } as const),
+
+	// setSortedType: (sort: string) => ({ type: 'SET_SORT_TYPE', payload: sort } as const),
+
+	setSearch: (value: string) => ({ type: 'SET_SEARCH_ITEM', payload: value } as const),
 }
 
 export const getPosts =
@@ -19,7 +23,7 @@ export const getPosts =
 	async (dispatch) => {
 		dispatch(postsAction.setLoading(true))
 		try {
-			const { data, total } = await APIPost.fetchPosts(currentPage, pageSize)
+			const { data, total } = await PostService.fetchPosts(currentPage, pageSize)
 			dispatch(postsAction.setTotalPostsCount(total))
 			dispatch(postsAction.setPosts(data))
 			dispatch(postsAction.setLoading(false))
@@ -29,10 +33,10 @@ export const getPosts =
 	}
 
 export const updatePost =
-	(id: number, data: IPostData): IPostsThunk =>
+	(id: string, data: IPostData): IPostsThunk =>
 	async (dispatch) => {
 		try {
-			const post = await APIPost.updatePost(id, data)
+			const post = await PostService.updatePost(id, data)
 			dispatch(postsAction.updatePost(id, post))
 		} catch (e) {
 			console.log(e)
@@ -43,7 +47,7 @@ export const createPost =
 	(author: string, title: string, desc: string): IPostsThunk =>
 	async (dispatch) => {
 		try {
-			await APIPost.createPost(author, title, desc)
+			await PostService.createPost(author, title, desc)
 			dispatch(getPosts())
 		} catch (e) {
 			console.log(e)
@@ -51,10 +55,10 @@ export const createPost =
 	}
 
 export const deletePosts =
-	(id: number): IPostsThunk =>
+	(id: string): IPostsThunk =>
 	async (dispatch) => {
 		try {
-			await APIPost.deletePost(id)
+			await PostService.deletePost(id)
 			dispatch(getPosts())
 		} catch (e) {
 			console.log(e)
