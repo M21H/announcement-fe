@@ -8,7 +8,7 @@ class PostService {
 	}
 
 	static async findSimilar(id: string) {
-		const { data } = await client.get(`/posts/find:${id}`)
+		const { data } = await client.get(`/posts/find/${id}`)
 		return data
 	}
 

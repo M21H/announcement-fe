@@ -3,21 +3,12 @@ import { Typography, Box } from '@material-ui/core'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import Entry from '../components/Entry'
-import * as yup from 'yup'
 import FormField from '../components/FormField'
 import MySubmit from '../components/UI/button/MySubmit'
 import { RegisterData } from '../redux/auth/auth.types'
 import { ILocation } from '../redux/types'
 import { useAppActions } from '../hooks/useAppActions'
-
-const schema: yup.SchemaOf<RegisterData> = yup.object({
-	username: yup.string().required('Name is required'),
-	password: yup.string().required('Password is required').min(5).max(20),
-	confirmPassword: yup
-		.string()
-		.required('Confirm password is required')
-		.oneOf([yup.ref('password')], 'Passwords not match'),
-})
+import { registerSchema } from '../validation'
 
 const Register: React.FC = () => {
 	const location = useLocation<ILocation>()
@@ -25,13 +16,13 @@ const Register: React.FC = () => {
 	const { register } = useAppActions()
 
 	const methods = useForm<RegisterData>({
-		resolver: yupResolver(schema),
+		resolver: yupResolver(registerSchema),
 	})
 
 	const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
 		const { from } = location.state || { from: { pathname: '/posts' } }
 		//@ts-ignore
-		register(data).then(() => {
+		register(data.username, data.password, data.confirmPassword).then(() => {
 			history.replace(from)
 		})
 	}

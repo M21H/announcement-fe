@@ -1,7 +1,6 @@
 import { Typography, Box } from '@material-ui/core'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useHistory, useLocation } from 'react-router-dom'
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Entry from '../components/Entry'
 import FormField from '../components/FormField'
@@ -10,11 +9,7 @@ import { LoginData } from '../redux/auth/auth.types'
 import { useAppSelector } from '../redux/store'
 import { ILocation } from '../redux/types'
 import { useAppActions } from '../hooks/useAppActions'
-
-const schema: yup.SchemaOf<LoginData> = yup.object({
-	username: yup.string().required('Name is required'),
-	password: yup.string().required('Password is required').min(5).max(20),
-})
+import { loginSchema } from '../validation'
 
 const Login: React.FC = () => {
 	const location = useLocation<ILocation>()
@@ -23,13 +18,13 @@ const Login: React.FC = () => {
 	const { error } = useAppSelector(({ auth }) => auth)
 
 	const methods = useForm<LoginData>({
-		resolver: yupResolver(schema),
+		resolver: yupResolver(loginSchema),
 	})
 
 	const onSubmit: SubmitHandler<LoginData> = (data: LoginData) => {
 		const { from } = location.state || { from: { pathname: '/posts' } }
 		//@ts-ignore
-		login(data).then(() => {
+		login(data.username, data.password).then(() => {
 			history.replace(from)
 		})
 	}

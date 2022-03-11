@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 )
 
-interface IBaseModal {
+export interface IBaseModal {
 	title: string
 	children: React.ReactNode
 }

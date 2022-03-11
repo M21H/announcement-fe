@@ -5,9 +5,9 @@ import { postsAction } from '../redux/posts/posts.actions'
 import { authAction } from '../redux/auth/auth.actions'
 import { useAppDispatch } from '../redux/store'
 
-import { login, logout, register } from '../redux/auth/auth.actions'
+import { login, logout, register, getAuthUserData } from '../redux/auth/auth.actions'
 import { initializeApp } from '../redux/app/app.action'
-import { getPosts, updatePost, deletePosts, createPost } from '../redux/posts/posts.actions'
+import { getPosts, updatePost, deletePost, createPost } from '../redux/posts/posts.actions'
 
 const allActions = {
 	...appAction,
@@ -16,12 +16,13 @@ const allActions = {
 	login,
 	logout,
 	register,
+	getAuthUserData,
 
 	initializeApp,
 
 	getPosts,
 	updatePost,
-	deletePosts,
+	deletePost,
 	createPost,
 }
 

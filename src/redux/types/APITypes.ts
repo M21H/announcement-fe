@@ -6,7 +6,4 @@ export enum APIStatusCode {
 export interface APIResponse<D = {}, SC = APIStatusCode> {
 	data: D
 	status: SC
-	message?: {
-		error?: string
-	}
 }
